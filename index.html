@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Veckoschema med färger</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: orange;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      color: white;
+      text-shadow: 1px 1px 2px #444;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      min-width: 700px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+      min-width: 90px;
+    }
+
+    th {
+      color: white;
+    }
+
+    th:nth-child(1) { background-color: #f4a261; } /* Vecka */
+    th:nth-child(2) { background-color: #e76f51; } /* Tid */
+    th:nth-child(3) { background-color: #f4a261; } /* Måndag */
+    th:nth-child(4) { background-color: #2a9d8f; } /* Tisdag */
+    th:nth-child(5) { background-color: #457b9d; } /* Onsdag */
+    th:nth-child(6) { background-color: #9d4edd; } /* Torsdag */
+    th:nth-child(7) { background-color: #e63946; } /* Fredag */
+
+    select, input[type="time"], input[type="text"] {
+      width: 100%;
+      padding: 4px;
+      font-size: 13px;
+    }
+
+    button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: none;
+      background-color: #264653;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #1d3557;
+    }
+  </style>
+</head>
+<body>
+
+<h2 class="titel">🎨 Fritidsschema</h2>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Vecka</th>
+        <th>Tid</th>
+        <th>Måndag</th>
+        <th>Tisdag</th>
+        <th>Onsdag</th>
+        <th>Torsdag</th>
+        <th>Fredag</th>
+      </tr>
+    </thead>
+    <tbody id="schema-body">
+      <!-- Dynamiska rader läggs till här -->
+    </tbody>
+  </table>
+</div>
+<div class="button-group">
+  <button onclick="clearSchema()">🗑️ Rensa schema</button>
+  <button onclick="addTidRad()">➕ Lägg till tid</button>
+  <button onclick="window.print()">🖨️ Skriv ut</button>
+</div>
+
+<script>
+const aktiviteter = [
+  "🎮 Spel", "📚 Läsa", "🎵 Musik", "🎨 Måla", "⚽ Sport", "🧑‍🤝‍🧑 Samling",
+  "🍎 Mellanmål", "🎲 Brädspel", "🎤 Karaoke", "🧘‍♀️ Yoga", "🕺 Dans",
+  "🧑‍🍳 Matlagning", "📖 Berättande", "🌳 Naturutflykt", "🎉 Fest",
+  "🛠️ Hantverk", "🎭 Teater", "🥪 Mellanmål"
+];
+
+function addTidRad(data = null) {
+  const tbody = document.getElementById("schema-body");
+  const rad = document.createElement("tr");
+
+  // Vecka
+  const veckaCell = document.createElement("td");
+  const veckaInput = document.createElement("input");
+  veckaInput.type = "text";
+  veckaInput.placeholder = "Vecka 34";
+  veckaInput.value = data?.vecka || "";
+  veckaCell.appendChild(veckaInput);
+  rad.appendChild(veckaCell);
+
+  // Tid
+  const tidCell = document.createElement("td");
+  const tidInput = document.createElement("input");
+  tidInput.type = "time";
+  tidInput.value = data?.tid || "";
+  tidCell.appendChild(tidInput);
+  rad.appendChild(tidCell);
+
+  // Aktiviteter
+  for (let i = 0; i < 5; i++) {
+    const cell = document.createElement("td");
+    const select = document.createElement("select");
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Välj aktivitet";
+    select.appendChild(defaultOption);
+
+    aktiviteter.forEach(aktivitet => {
+      const option = document.createElement("option");
+      option.textContent = aktivitet;
+      option.value = aktivitet;
+      select.appendChild(option);
+    });
+
+    select.value = data?.aktiviteter?.[i] || "";
+    cell.appendChild(select);
+    rad.appendChild(cell);
+  }
+
+  tbody.appendChild(rad);
+  saveSchema();
+}
+
+function saveSchema() {
+  const rows = document.querySelectorAll("#schema-body tr");
+  const schema = [];
+
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input, select");
+    const vecka = inputs[0].value;
+    const tid = inputs[1].value;
+    const aktiviteter = Array.from(inputs).slice(2).map(s => s.value);
+    schema.push({ vecka, tid, aktiviteter });
+  });
+
+  localStorage.setItem("fritidsschema", JSON.stringify(schema));
+}
+
+function loadSchema() {
+  const saved = localStorage.getItem("fritidsschema");
+  if (saved) {
+    const schema = JSON.parse(saved);
+    schema.forEach(data => addTidRad(data));
+  }
+}
+
+function clearSchema() {
+  localStorage.removeItem("fritidsschema");
+  document.getElementById("schema-body").innerHTML = "";
+}
+
+window.addEventListener("load", loadSchema);
+</script>
+
+</body>
+</html>
