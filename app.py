@@ -1,37 +1,27 @@
-from flask import Flask, render_template, request, jsonify
-import sqlite3
+from flask import Flask, render_template, request, jsonify, send_from_directory
+import json
 
 app = Flask(__name__)
-DB_FILE = "schema.db"
 
-def get_db_connection():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    try:
+        with open('schema.json', 'r', encoding='utf-8') as f:
+            schema = json.load(f)
+    except:
+        schema = {}
+    return render_template('index.html', schema=schema)
 
-@app.route("/api/aktiviteter", methods=["GET"])
-def get_aktiviteter():
-    conn = get_db_connection()
-    aktiviteter = conn.execute("SELECT * FROM aktiviteter").fetchall()
-    conn.close()
-    return jsonify([dict(a) for a in aktiviteter])
+@app.route('/save', methods=['POST'])
+def save():
+    data = request.get_json()
+    with open('schema.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return jsonify({"status": "sparat"})
 
-@app.route("/api/aktiviteter", methods=["POST"])
-def add_aktiviteter():
-    data = request.json
-    conn = get_db_connection()
-    for rad in data:
-        conn.execute(
-            "INSERT INTO aktiviteter (namn, tid, anvandare) VALUES (?, ?, ?)",
-            (rad["namn"], rad["tid"], rad.get("anvandare", "okänd"))
-        )
-    conn.commit()
-    conn.close()
-    return jsonify({"status": "ok"})
+@app.route('/service-worker.js')
+def sw():
+    return send_from_directory('.', 'service-worker.js')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)  # Ändra porten här
+    app.run(debug=True)

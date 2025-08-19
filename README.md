@@ -22,4 +22,6 @@ Projektet hjälper dig att:
 1. Klona repon:
    ```bash
    git clone https://github.com/ayoshi-pixel/fritids-schema.git
-   
+   ## 📅 Mitt Fritidsschema
+
+👉 [Öppna fritidsschemat som PDF](fritidsschema%20(4).pdf)
