@@ -24,4 +24,6 @@ Projektet hjälper dig att:
    git clone https://github.com/ayoshi-pixel/fritids-schema.git
    ## 📅 Mitt Fritidsschema
 
-👉 [Öppna fritidsschemat som PDF](fritidsschema%20(4).pdf)
+## 📅 View My Fritids-Schema
+
+👉 [Open fritidsschema.pdf](./fritidsschema.pdf)
