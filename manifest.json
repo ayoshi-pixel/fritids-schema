@@ -1,13 +1,18 @@
 {
-  "name": "Fritidsschema",
+  "name": "Fritids Schema",
   "short_name": "Schema",
-  "start_url": "index.html",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#f9a825",
+  "background_color": "#f8b500",
+  "theme_color": "#ff9800",
   "icons": [
     {
-      "src": "icons/icon-512.png",
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
